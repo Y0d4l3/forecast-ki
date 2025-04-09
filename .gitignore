@@ -119,4 +119,3 @@ fabric.properties
 /model.pkl
 /model_training.log
 /preprocessor.pkl
-/data/transformed_data.csv
