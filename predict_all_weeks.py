@@ -47,7 +47,7 @@ def predict_per_week():
     print(f"⏹ Average MAE: {result_df['mae'].mean():.2f}")
     print(f"⏹ Average RMSE: {result_df['rmse'].mean():.2f}")
 
-    file_path = 'data/weekly_evaluation.csv'
+    file_path = 'prediction/weekly_evaluation.csv'
     result_df.to_csv(file_path, index=False)
     print(f"\n✅ Result saved in {file_path}")
 

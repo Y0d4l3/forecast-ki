@@ -50,6 +50,6 @@ if __name__ == '__main__':
         print(f"⏹ Average MAE: {mae:.2f}")
         print(f"⏹ Average RMSE: {rmse:.2f}")
 
-        file_path = 'data/prediction.csv'
+        file_path = 'prediction/prediction.csv'
         result_df.to_csv(file_path, index=False)
         print(f"\n✅ Result saved in {file_path}")
