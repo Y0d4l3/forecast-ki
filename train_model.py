@@ -9,10 +9,11 @@ from sklearn.model_selection import train_test_split, KFold
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import optuna
 
-MODEL_NAME = 'xgboost'
+MODEL_NAME = 'lightgbm'  # Options: xgboost, random_forest, lightgbm
+N_TRIALS = 100
 Y_COLUMN_NAME = 'production'
 FEATURES_TO_USE = []
-FEATURES_TO_TRANSFORM = ['stock', 'net_raw_demand', 'preview_sum']
+FEATURES_TO_TRANSFORM = ['stock', 'net_raw_demand', 'preview_sum', 'production_demand']
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -113,7 +114,7 @@ def main():
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
     logger.info('Training started with: ' + MODEL_NAME)
-    best_params = optimize_model(x_train.to_numpy(), y_train.to_numpy(), n_trials=10)
+    best_params = optimize_model(x_train.to_numpy(), y_train.to_numpy(), n_trials=N_TRIALS)
 
     if MODEL_NAME == 'xgboost':
         model = XGBRegressor(objective='reg:squarederror', **best_params, random_state=42)

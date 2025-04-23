@@ -42,3 +42,6 @@ if __name__ == '__main__':
         file_path = 'data/prediction.csv'
         result.to_csv(file_path, index=False)
         print(f'prediction stored in {file_path}.')
+        mae = (result['actual_production_values'] - result['predicted_production_values']).abs().mean()
+        rmse = np.sqrt(((result['actual_production_values'] - result['predicted_production_values']) ** 2).mean())
+        print(f"MAE: {mae:.2f}, RMSE: {rmse:.2f}")
