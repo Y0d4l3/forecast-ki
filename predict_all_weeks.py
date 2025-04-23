@@ -4,7 +4,7 @@ import numpy as np
 from train_model import Y_COLUMN_NAME
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-MODEL = 'xgboost'
+MODEL = 'random_forest'
 DATA_PATH = 'data/transformed_data.csv'
 
 def predict_per_week():
@@ -47,7 +47,7 @@ def predict_per_week():
     print(f"⏹ Average MAE: {result_df['mae'].mean():.2f}")
     print(f"⏹ Average RMSE: {result_df['rmse'].mean():.2f}")
 
-    file_path = f'prediction/{MODEL}_weekly.csv'
+    file_path = f'predictions/{MODEL}_weekly.csv'
     result_df.to_csv(file_path, index=False)
     print(f"\n✅ Result saved in {file_path}")
 

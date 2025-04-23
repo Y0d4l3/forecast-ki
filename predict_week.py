@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from train_model import Y_COLUMN_NAME
 
-MODEL = 'xgboost'
+MODEL = 'random_forest'
 DATA_PATH = 'data/transformed_data.csv'
 YEAR = 2025
 WEEK = 12
@@ -50,6 +50,6 @@ if __name__ == '__main__':
         print(f"⏹ Average MAE: {mae:.2f}")
         print(f"⏹ Average RMSE: {rmse:.2f}")
 
-        file_path = f'prediction/{MODEL}_{YEAR}_{WEEK}.csv'
+        file_path = f'predictions/{MODEL}_{YEAR}_{WEEK}.csv'
         result_df.to_csv(file_path, index=False)
         print(f"\n✅ Result saved in {file_path}")
