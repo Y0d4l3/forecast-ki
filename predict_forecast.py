@@ -5,7 +5,7 @@ from train_model import Y_COLUMN_NAME
 
 
 def predict_for_week(year, week):
-    with open('model.pkl', 'rb') as f:
+    with open('models/xgboost.pkl', 'rb') as f:
         model = pickle.load(f)
 
     df = pd.read_csv('data/transformed_data.csv')
@@ -37,7 +37,7 @@ def predict_for_week(year, week):
 
 
 if __name__ == '__main__':
-    result = predict_for_week(year=2025, week=12)
+    result = predict_for_week(year=2025, week=3)
     if result is not None:
         file_path = 'data/prediction.csv'
         result.to_csv(file_path, index=False)
