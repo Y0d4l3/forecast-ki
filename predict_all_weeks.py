@@ -4,12 +4,11 @@ import numpy as np
 from train_model import Y_COLUMN_NAME
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-MODEL_NAME = 'xgboost'
-MODEL_PATH = f'models/{MODEL_NAME}.pkl'
+MODEL = 'xgboost'
 DATA_PATH = 'data/transformed_data.csv'
 
 def predict_per_week():
-    with open(MODEL_PATH, 'rb') as f:
+    with open(f'models/{MODEL}.pkl', 'rb') as f:
         model = pickle.load(f)
 
     df = pd.read_csv(DATA_PATH)
@@ -48,8 +47,9 @@ def predict_per_week():
     print(f"⏹ Average MAE: {result_df['mae'].mean():.2f}")
     print(f"⏹ Average RMSE: {result_df['rmse'].mean():.2f}")
 
-    result_df.to_csv('data/weekly_evaluation.csv', index=False)
-    print("\n✅ Result saved in 'data/weekly_evaluation.csv'")
+    file_path = 'data/weekly_evaluation.csv'
+    result_df.to_csv(file_path, index=False)
+    print(f"\n✅ Result saved in {file_path}")
 
 
 if __name__ == '__main__':
