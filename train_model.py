@@ -13,7 +13,6 @@ MODEL_NAME = 'xgboost'  # Options: xgboost, random_forest, lightgbm
 N_TRIALS = 100
 Y_COLUMN_NAME = 'production'
 FEATURES_TO_USE = []
-FEATURES_TO_TRANSFORM = ['stock', 'net_raw_demand', 'preview_sum', 'production_demand']
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -97,7 +96,7 @@ def evaluate_model(model, x_test, y_test):
 
 
 def save_artifacts(model):
-    with open('model.pkl', 'wb') as f:
+    with open('models/model.pkl', 'wb') as f:
         # noinspection PyTypeChecker
         pickle.dump(model, f)
 

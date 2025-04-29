@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import FunctionTransformer, StandardScaler, QuantileTransformer
+from sklearn.preprocessing import FunctionTransformer, QuantileTransformer, StandardScaler
 
 from train_model import get_features
 
-FEATURES_TO_TRANSFORM = ['stock', 'net_raw_demand', 'preview_sum']
+FEATURES_TO_TRANSFORM = ['stock', 'net_raw_demand', 'preview_sum', 'production_demand']
 
 
 def create_feature_engineering_pipeline(features_to_transform):
@@ -47,12 +47,13 @@ def transform_features(df):
 
 def main():
     df = pd.read_csv('data/processed_data.csv')
-    df = df[(df['production'] <= 2000)]
 
+    mask_under_2000 = df['production_demand'] <= 2000
     transformed_df = transform_features(df)
-    transformed_df = transformed_df[np.isfinite(transformed_df).all(1)]
+    df = transformed_df[mask_under_2000].reset_index(drop=True)
+
     file_path = 'data/transformed_data.csv'
-    transformed_df.to_csv(file_path, index=False)
+    df.to_csv(file_path, index=False)
     print(f'transformed data stored in {file_path}.')
 
 

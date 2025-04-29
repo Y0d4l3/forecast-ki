@@ -116,6 +116,6 @@ fabric.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/jetbrains
 
-/model.pkl
+/models/model.pkl
 /model_training.log
 /preprocessor.pkl
