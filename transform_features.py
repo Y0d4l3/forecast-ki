@@ -11,17 +11,11 @@ FEATURES_TO_TRANSFORM = ['stock', 'net_raw_demand', 'preview_sum']
 
 def create_feature_engineering_pipeline(features_to_transform):
     log_pipeline = Pipeline([
-        ('log', FunctionTransformer(np.log1p, validate=False)),
-        ('scaler', StandardScaler())
+        ('log', FunctionTransformer(np.log1p, validate=False))
     ])
 
     quantile_pipeline = Pipeline([
-        ('quantile', QuantileTransformer(output_distribution='normal', random_state=42)),
-        ('scaler', StandardScaler())
-    ])
-
-    standard_pipeline = Pipeline([
-        ('scaler', StandardScaler())
+        ('quantile', QuantileTransformer(output_distribution='normal', random_state=42))
     ])
 
     preprocessor = ColumnTransformer(
@@ -53,7 +47,10 @@ def transform_features(df):
 
 def main():
     df = pd.read_csv('data/processed_data.csv')
+    df = df[(df['production'] <= 2000)]
+
     transformed_df = transform_features(df)
+    transformed_df = transformed_df[np.isfinite(transformed_df).all(1)]
     file_path = 'data/transformed_data.csv'
     transformed_df.to_csv(file_path, index=False)
     print(f'transformed data stored in {file_path}.')

@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split, KFold
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import optuna
 
-MODEL_NAME = 'lightgbm'  # Options: xgboost, random_forest, lightgbm
+MODEL_NAME = 'xgboost'  # Options: xgboost, random_forest, lightgbm
 N_TRIALS = 100
 Y_COLUMN_NAME = 'production'
 FEATURES_TO_USE = []
@@ -104,7 +104,6 @@ def save_artifacts(model):
 
 def main():
     df = pd.read_csv('data/transformed_data.csv')
-    #df = data[(data['production'] <= 2000)]
 
     training_df = df[get_features(df)]
 
