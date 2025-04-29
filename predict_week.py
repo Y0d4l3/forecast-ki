@@ -3,17 +3,16 @@ import pandas as pd
 import numpy as np
 from train_model import Y_COLUMN_NAME
 
-MODEL = 'random_forest'
+MODEL = 'xgboost_2000'
 DATA_PATH = 'data/transformed_data.csv'
 YEAR = 2025
-WEEK = 12
+WEEK = 5
 
 def predict_for_week(year, week):
     with open(f'models/{MODEL}.pkl', 'rb') as f:
         model = pickle.load(f)
 
     df = pd.read_csv(DATA_PATH)
-    #df = data[(data['production'] <= 2000)]
 
     df = df[(df['year'] == year) & (df['calendar_week'] == week)].copy()
     if len(df) == 0:
