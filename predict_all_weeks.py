@@ -4,7 +4,7 @@ import numpy as np
 from train_model import Y_COLUMN_NAME
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-MODEL = 'test'
+MODEL = 'xgboost_2000'
 DATA_PATH = 'data/transformed_data.csv'
 
 def predict_per_week():

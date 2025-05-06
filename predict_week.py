@@ -6,7 +6,7 @@ from train_model import Y_COLUMN_NAME
 MODEL = 'xgboost_2000'
 DATA_PATH = 'data/transformed_data.csv'
 YEAR = 2025
-WEEK = 5
+WEEK = 12
 
 def predict_for_week(year, week):
     with open(f'models/{MODEL}.pkl', 'rb') as f:
