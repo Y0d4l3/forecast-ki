@@ -5,11 +5,11 @@ import numpy as np
 from lightgbm import LGBMRegressor
 from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
-from sklearn.model_selection import train_test_split, KFold
+from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import optuna
 
-MODEL_NAME = 'xgboost'  # Options: xgboost, random_forest, lightgbm
+MODEL_NAME = 'lightgbm'  # Options: xgboost, random_forest, lightgbm
 N_TRIALS = 100
 Y_COLUMN_NAME = 'production'
 FEATURES_TO_USE = []
@@ -62,14 +62,14 @@ def objective(trial, x, y):
     else:
         raise ValueError('Model name unknown. Use xgboost, random_forest or lightgbm.')
 
-    kf = KFold(n_splits=5, shuffle=True, random_state=42)
+    tss = TimeSeriesSplit(n_splits=5)
     rmse_scores = []
 
-    for train_index, val_index in kf.split(x, y):
+    for train_index, val_index in tss.split(x, y):
         x_train, x_val = x[train_index], x[val_index]
         y_train, y_val = y[train_index], y[val_index]
 
-        model.fit(x_train, y_train)
+        model.fit(x_train, y_train.ravel())
         y_pred = model.predict(x_val)
         rmse = np.sqrt(mean_squared_error(y_val, y_pred))
         rmse_scores.append(rmse)
@@ -96,20 +96,16 @@ def evaluate_model(model, x_test, y_test):
 
 
 def save_artifacts(model):
-    with open('models/model.pkl', 'wb') as f:
+    with open(f'models/{MODEL_NAME}.pkl', 'wb') as f:
         # noinspection PyTypeChecker
         pickle.dump(model, f)
 
 
 def main():
-    df = pd.read_csv('data/transformed_data.csv')
-
-    training_df = df[get_features(df)]
-
-    x = training_df[training_df.columns.difference([Y_COLUMN_NAME]).tolist()]
-    y = df[Y_COLUMN_NAME]
-
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+    x_train = pd.read_csv('data/transformed/x_train.csv')
+    x_test = pd.read_csv('data/transformed/x_test.csv')
+    y_train = pd.read_csv('data/processed/y_train.csv')
+    y_test = pd.read_csv('data/processed/y_test.csv')
 
     logger.info('Training started with: ' + MODEL_NAME)
     best_params = optimize_model(x_train.to_numpy(), y_train.to_numpy(), n_trials=N_TRIALS)

@@ -1,19 +1,18 @@
-import numpy as np
+from pathlib import Path
+
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import FunctionTransformer, QuantileTransformer, StandardScaler
+from sklearn.preprocessing import QuantileTransformer
 
 from train_model import get_features
 
 FEATURES_TO_TRANSFORM = ['stock', 'net_raw_demand', 'preview_sum', 'production_demand']
+PROCESSED_DATA_FOLDER_PATH = 'data/processed/'
+TRANSFORMED_DATA_FOLDER_PATH = 'data/transformed/'
 
 
 def create_feature_engineering_pipeline(features_to_transform):
-    log_pipeline = Pipeline([
-        ('log', FunctionTransformer(np.log1p, validate=False))
-    ])
-
     quantile_pipeline = Pipeline([
         ('quantile', QuantileTransformer(output_distribution='normal', random_state=42))
     ])
@@ -46,15 +45,20 @@ def transform_features(df):
 
 
 def main():
-    df = pd.read_csv('data/processed_data.csv')
+    folder_path = Path(PROCESSED_DATA_FOLDER_PATH)
+    for file in [f for f in folder_path.glob('*.csv') if 'x' in f.name]:
+        df = pd.read_csv(file)
+        transformed_df = transform_features(df)
+        transformed_df.to_csv(f'{TRANSFORMED_DATA_FOLDER_PATH}{file.name}', index=False)
 
-    mask_under_2000 = df['production_demand'] <= 2000
-    transformed_df = transform_features(df)
-    df = transformed_df[mask_under_2000].reset_index(drop=True)
+    #file_name = 'test_data_2025_13.csv'
+    #df = pd.read_csv(f'{PROCESSED_DATA_FOLDER_PATH}{file_name}')
+    #transformed_df = transform_features(df)
+    #transformed_df.to_csv(f'{TRANSFORMED_DATA_FOLDER_PATH}{file_name}', index=False)
 
-    file_path = 'data/transformed_data.csv'
-    df.to_csv(file_path, index=False)
-    print(f'transformed data stored in {file_path}.')
+    print(f'data stored in {TRANSFORMED_DATA_FOLDER_PATH}.')
+
+
 
 
 if __name__ == '__main__':
