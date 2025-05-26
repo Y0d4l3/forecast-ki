@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from preprocess_data import Y_COLUMN_NAME
 
-MODEL = 'xgboost_2000'
-DATA_PATH = 'data/transformed/test_data_2025_13.csv'
+MODEL = 'random_forest'
+DATA_PATH = 'data/transformed/test_2025_13.csv'
 YEAR = 2025
 WEEK = 13
 
