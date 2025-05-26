@@ -115,7 +115,3 @@ fabric.properties
 .idea/**/azureSettings.xml
 
 # End of https://www.toptal.com/developers/gitignore/api/jetbrains
-
-/models/model.pkl
-/model_training.log
-/preprocessor.pkl
