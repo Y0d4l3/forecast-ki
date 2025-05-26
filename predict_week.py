@@ -4,7 +4,7 @@ import numpy as np
 from preprocess_data import Y_COLUMN_NAME
 
 MODEL = 'xgboost_sub_2000'
-DATA_PATH = 'data/transformed/test_2025_13.csv'
+DATA_PATH = 'data/transformed/sub_2000/test_2025_13.csv'
 YEAR = 2025
 WEEK = 13
 

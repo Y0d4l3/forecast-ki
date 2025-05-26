@@ -55,17 +55,18 @@ def transform_features(x_train, x_test):
 
 
 def transform_test():
-    test = pd.read_csv('data/processed/test_2025_13.csv')
+    df = pd.read_csv('data/processed/test_2025_13.csv')
+    df = df[(df['production_demand'] <= 2000)].copy()
     transformer_path = 'models/transformer.pkl'
     with open(transformer_path, 'rb') as f:
         preprocessor = pickle.load(f)
 
-    transformed_test_array = preprocessor.transform(test[FEATURES_TO_TRANSFORM])
-    transformed_test_df = pd.DataFrame(transformed_test_array, columns=FEATURES_TO_TRANSFORM, index=test.index)
-    remaining_test_df = test.drop(columns=FEATURES_TO_TRANSFORM)
+    transformed_test_array = preprocessor.transform(df[FEATURES_TO_TRANSFORM])
+    transformed_test_df = pd.DataFrame(transformed_test_array, columns=FEATURES_TO_TRANSFORM, index=df.index)
+    remaining_test_df = df.drop(columns=FEATURES_TO_TRANSFORM)
     test_transformed = pd.concat([transformed_test_df, remaining_test_df], axis=1)
 
-    test_transformed.to_csv('data/transformed/test_2025_13.csv', index=False)
+    test_transformed.to_csv('data/transformed/sub_2000/test_2025_13.csv', index=False)
 
 
 def main():
@@ -79,6 +80,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
-    #transform_test()
+    #main()
+    transform_test()
 
