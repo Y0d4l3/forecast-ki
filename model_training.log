@@ -10,3 +10,6 @@
 2025-05-26 21:26:16,970 - INFO - Training started with: xgboost
 2025-05-26 21:32:35,719 - INFO - Best Hyperparameters: {'n_estimators': 164, 'max_depth': 7, 'learning_rate': 0.030028208099169965, 'subsample': 0.6320136274271466, 'colsample_bytree': 0.7194196667966952}
 2025-05-26 21:32:36,679 - INFO - Evaluation -> RMSE: 184.7376, MAE: 53.7990
+2025-05-26 23:56:27,365 - INFO - Training started with: xgboost
+2025-05-27 00:08:25,224 - INFO - Best Hyperparameters: {'n_estimators': 190, 'max_depth': 8, 'learning_rate': 0.01700055260779793, 'subsample': 0.6179280135711319, 'colsample_bytree': 0.831748076783054}
+2025-05-27 00:08:26,686 - INFO - Evaluation -> RMSE: 179.0699, MAE: 54.4695

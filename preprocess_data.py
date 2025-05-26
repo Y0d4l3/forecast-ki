@@ -13,8 +13,6 @@ def features_to_use(df):
 
 
 def preprocess_df(df):
-    #df = df[(df['production_demand'] <= 2000)].copy()
-
     df.drop('gmc', axis=1, inplace=True)
     df.drop('parameter_id', axis=1, inplace=True)
     df.drop('ready', axis=1, inplace=True)
@@ -55,21 +53,23 @@ def time_split_by_week(df, test_ratio=0.2):
 
 
 def main():
-    df = pd.read_csv('data/raw.csv')
-    #df = pd.read_csv('data/test_2025_13.csv')
+    #df = pd.read_csv('data/raw.csv')
+    df = pd.read_csv('data/test_2025_13.csv')
+
+    df = df[(df['production'] <= 2000)].copy()
 
     df = df.sort_values(by=['year', 'calendar_week']).reset_index(drop=True)
 
     preprocessed_df = preprocess_df(df)
 
-    x_train, x_test, y_train, y_test = time_split_by_week(preprocessed_df)
+    #x_train, x_test, y_train, y_test = time_split_by_week(preprocessed_df)
 
-    x_train.to_csv('data/processed/x_train.csv', index=False)
-    x_test.to_csv('data/processed/x_test.csv', index=False)
-    y_train.to_csv('data/processed/y_train.csv', index=False)
-    y_test.to_csv('data/processed/y_test.csv', index=False)
+    #x_train.to_csv('data/processed/sub_2000/x_train.csv', index=False)
+    #x_test.to_csv('data/processed/sub_2000/x_test.csv', index=False)
+    #y_train.to_csv('data/processed/sub_2000/y_train.csv', index=False)
+    #y_test.to_csv('data/processed/sub_2000/y_test.csv', index=False)
 
-    #preprocessed_df.to_csv('data/processed/test_2025_13.csv', index=False)
+    preprocessed_df.to_csv('data/processed/test_2025_13.csv', index=False)
 
 
 if __name__ == '__main__':

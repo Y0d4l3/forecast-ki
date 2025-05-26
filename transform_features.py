@@ -31,7 +31,7 @@ def transform_features(x_train, x_test):
     if not all(FEATURE in features_to_use(x_train) for FEATURE in FEATURES_TO_TRANSFORM):
         raise ValueError('Not all features to transform are present in features to use.')
 
-    transformer_path = 'models/transformer.pkl'
+    transformer_path = 'models/transformer_sub_2000.pkl'
     if os.path.exists(transformer_path):
         with open(transformer_path, 'rb') as f:
             preprocessor = pickle.load(f)
@@ -56,7 +56,6 @@ def transform_features(x_train, x_test):
 
 def transform_test():
     df = pd.read_csv('data/processed/test_2025_13.csv')
-    df = df[(df['production_demand'] <= 2000)].copy()
     transformer_path = 'models/transformer.pkl'
     with open(transformer_path, 'rb') as f:
         preprocessor = pickle.load(f)
@@ -70,13 +69,13 @@ def transform_test():
 
 
 def main():
-    x_train = pd.read_csv('data/processed/x_train.csv')
-    x_test = pd.read_csv('data/processed/x_test.csv')
+    x_train = pd.read_csv('data/processed/sub_2000/x_train.csv')
+    x_test = pd.read_csv('data/processed/sub_2000/x_test.csv')
 
     x_train_transformed, x_test_transformed = transform_features(x_train, x_test)
 
-    x_train_transformed.to_csv('data/transformed/x_train.csv', index=False)
-    x_test_transformed.to_csv('data/transformed/x_test.csv', index=False)
+    x_train_transformed.to_csv('data/transformed/sub_2000/x_train.csv', index=False)
+    x_test_transformed.to_csv('data/transformed/sub_2000/x_test.csv', index=False)
 
 
 if __name__ == '__main__':
