@@ -4,27 +4,33 @@ import numpy as np
 from preprocess_data import Y_COLUMN_NAME
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-MODEL = 'xgboost_2000'
-DATA_PATH = 'data/transformed_data.csv'
+MODEL = 'random_forest'
+X_TRAIN_PATH = 'data/transformed/x_train.csv'
+Y_TRAIN_PATH = 'data/processed/y_train.csv'
+
 
 def predict_per_week():
     with open(f'models/{MODEL}.pkl', 'rb') as f:
         model = pickle.load(f)
 
-    df = pd.read_csv(DATA_PATH)
-    weeks = df[['year', 'calendar_week']].drop_duplicates().sort_values(['year', 'calendar_week'])
+    x_train = pd.read_csv(X_TRAIN_PATH)
+    y_train = pd.read_csv(Y_TRAIN_PATH)
+
+    x_train[Y_COLUMN_NAME] = y_train[Y_COLUMN_NAME].values
+
+    weeks = x_train[['year', 'calendar_week']].drop_duplicates().sort_values(['year', 'calendar_week'])
 
     weekly_results = []
 
     for _, row in weeks.iterrows():
         year, week = row['year'], row['calendar_week']
-        week_df = df[(df['year'] == year) & (df['calendar_week'] == week)].copy()
+        x_train_for_week = x_train[(x_train['year'] == year) & (x_train['calendar_week'] == week)].copy()
 
-        if len(week_df) == 0 or Y_COLUMN_NAME not in week_df.columns:
+        if len(x_train_for_week) == 0 or Y_COLUMN_NAME not in x_train_for_week.columns:
             continue
 
-        x = week_df[model.feature_names_in_]
-        y_true = week_df[Y_COLUMN_NAME].values
+        x = x_train_for_week[model.feature_names_in_]
+        y_true = x_train_for_week[Y_COLUMN_NAME].values
         y_pred = model.predict(x)
         y_pred = np.round(y_pred / 100) * 100
 
@@ -34,12 +40,10 @@ def predict_per_week():
         weekly_results.append({
             'year': year,
             'week': week,
-            'samples': len(week_df),
+            'samples': len(x_train_for_week),
             'mae': mae,
             'rmse': rmse
         })
-
-        print(f"Year {year}, Week {week} → MAE: {mae:.2f}, RMSE: {rmse:.2f}, Samples: {len(week_df)}")
 
     result_df = pd.DataFrame(weekly_results)
 
