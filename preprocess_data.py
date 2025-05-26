@@ -1,12 +1,16 @@
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
-
-from train_model import get_features
 
 SUB_2000 = False
+FEATURES_TO_USE = []
 Y_COLUMN_NAME = 'production'
-FOLDER_PATH = 'data/processed/'
+
+
+def features_to_use(df):
+    if len(FEATURES_TO_USE) != 0:
+        return FEATURES_TO_USE
+    else:
+        return df.columns.difference([Y_COLUMN_NAME]).tolist()
 
 
 def preprocess_df(df):
@@ -27,29 +31,46 @@ def preprocess_df(df):
     return df
 
 
-def split_df(df):
-    df = df.sort_values(by=['year', 'calendar_week'])
+def time_split_by_week(df, test_ratio=0.2):
+    df['year_week'] = df['year'].astype(str) + '-' + df['calendar_week'].astype(str).str.zfill(2)
 
-    training_df = df[get_features(df)]
+    unique_weeks = df['year_week'].drop_duplicates().tolist()
 
-    x = training_df[training_df.columns.difference([Y_COLUMN_NAME]).tolist()]
-    y = df[Y_COLUMN_NAME]
+    n_total_weeks = len(unique_weeks)
+    n_test_weeks = int(n_total_weeks * test_ratio)
 
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+    test_weeks = set(unique_weeks[-n_test_weeks:])
 
-    x_train.to_csv(f'{FOLDER_PATH}x_train.csv', index=False)
-    x_test.to_csv(f'{FOLDER_PATH}x_test.csv', index=False)
-    y_train.to_csv(f'{FOLDER_PATH}y_train.csv', index=False)
-    y_test.to_csv(f'{FOLDER_PATH}y_test.csv', index=False)
+    test_df = df[df['year_week'].isin(test_weeks)].copy()
+    train_df = df[~df['year_week'].isin(test_weeks)].copy()
+
+    train_df.drop(columns='year_week', inplace=True)
+    test_df.drop(columns='year_week', inplace=True)
+
+    x_train = train_df[features_to_use(train_df)]
+    x_test = test_df[features_to_use(test_df)]
+
+    y_train = train_df[Y_COLUMN_NAME]
+    y_test = test_df[Y_COLUMN_NAME]
+
+    return x_train, x_test, y_train, y_test
 
 
 def main():
     df = pd.read_csv('data/raw.csv')
-    preprocessed_df = preprocess_df(df)
-    split_df(preprocessed_df)
+    #df = pd.read_csv('data/test_2025_13.csv')
 
-    #split_df(preprocessed_df)
-    print(f'data stored in {FOLDER_PATH}.')
+    df = df.sort_values(by=['year', 'calendar_week']).reset_index(drop=True)
+
+    preprocessed_df = preprocess_df(df)
+
+    x_train, x_test, y_train, y_test = time_split_by_week(preprocessed_df)
+
+    x_train.to_csv('data/processed/x_train.csv', index=False)
+    x_test.to_csv('data/processed/x_test.csv', index=False)
+    y_train.to_csv('data/processed/y_train.csv', index=False)
+    y_test.to_csv('data/processed/y_test.csv', index=False)
+    #df.to_csv('data/processed/test_2025_13.csv', index=False)
 
 
 if __name__ == '__main__':

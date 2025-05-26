@@ -1,7 +1,7 @@
 import pickle
 import pandas as pd
 import numpy as np
-from train_model import Y_COLUMN_NAME
+from preprocess_data import Y_COLUMN_NAME
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 MODEL = 'xgboost_2000'

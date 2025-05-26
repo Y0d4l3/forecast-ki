@@ -1,3 +1,5 @@
+import os
+import pickle
 from pathlib import Path
 
 import pandas as pd
@@ -5,11 +7,9 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import QuantileTransformer
 
-from train_model import get_features
+from preprocess_data import features_to_use
 
 FEATURES_TO_TRANSFORM = ['stock', 'net_raw_demand', 'preview_sum', 'production_demand']
-PROCESSED_DATA_FOLDER_PATH = 'data/processed/'
-TRANSFORMED_DATA_FOLDER_PATH = 'data/transformed/'
 
 
 def create_feature_engineering_pipeline(features_to_transform):
@@ -27,39 +27,58 @@ def create_feature_engineering_pipeline(features_to_transform):
     return preprocessor
 
 
-def transform_features(df):
-    if not all(FEATURE in get_features(df) for FEATURE in FEATURES_TO_TRANSFORM):
+def transform_features(x_train, x_test):
+    if not all(FEATURE in features_to_use(x_train) for FEATURE in FEATURES_TO_TRANSFORM):
         raise ValueError('Not all features to transform are present in features to use.')
 
-    preprocessor = create_feature_engineering_pipeline(FEATURES_TO_TRANSFORM)
+    transformer_path = 'models/transformer.pkl'
+    if os.path.exists(transformer_path):
+        with open(transformer_path, 'rb') as f:
+            preprocessor = pickle.load(f)
+    else:
+        preprocessor = create_feature_engineering_pipeline(FEATURES_TO_TRANSFORM)
 
-    transformed_array = preprocessor.fit_transform(df[FEATURES_TO_TRANSFORM])
+    transformed_array = preprocessor.fit_transform(x_train[FEATURES_TO_TRANSFORM])
+    transformed_df = pd.DataFrame(transformed_array, columns=FEATURES_TO_TRANSFORM, index=x_train.index)
+    remaining_df = x_train.drop(columns=FEATURES_TO_TRANSFORM)
+    x_train_transformed = pd.concat([transformed_df, remaining_df], axis=1)
 
-    transformed_df = pd.DataFrame(transformed_array, columns=FEATURES_TO_TRANSFORM)
+    transformed_test_array = preprocessor.transform(x_test[FEATURES_TO_TRANSFORM])
+    transformed_test_df = pd.DataFrame(transformed_test_array, columns=FEATURES_TO_TRANSFORM, index=x_test.index)
+    remaining_test_df = x_test.drop(columns=FEATURES_TO_TRANSFORM)
+    x_test_transformed = pd.concat([transformed_test_df, remaining_test_df], axis=1)
 
-    remaining_df = df.drop(columns=FEATURES_TO_TRANSFORM)
+    with open('models/transformer.pkl', 'wb') as f:
+        pickle.dump(preprocessor, f)
 
-    final_df = pd.concat([transformed_df, remaining_df], axis=1)
+    return x_train_transformed, x_test_transformed
 
-    return final_df
+
+def transform_test():
+    test = pd.read_csv('data/processed/test_2025_13.csv')
+    transformer_path = 'models/transformer.pkl'
+    with open(transformer_path, 'rb') as f:
+        preprocessor = pickle.load(f)
+
+    transformed_test_array = preprocessor.transform(test[FEATURES_TO_TRANSFORM])
+    transformed_test_df = pd.DataFrame(transformed_test_array, columns=FEATURES_TO_TRANSFORM, index=test.index)
+    remaining_test_df = test.drop(columns=FEATURES_TO_TRANSFORM)
+    test_transformed = pd.concat([transformed_test_df, remaining_test_df], axis=1)
+
+    test_transformed.to_csv('data/transformed/test_2025_13.csv', index=False)
 
 
 def main():
-    folder_path = Path(PROCESSED_DATA_FOLDER_PATH)
-    for file in [f for f in folder_path.glob('*.csv') if 'x' in f.name]:
-        df = pd.read_csv(file)
-        transformed_df = transform_features(df)
-        transformed_df.to_csv(f'{TRANSFORMED_DATA_FOLDER_PATH}{file.name}', index=False)
+    x_train = pd.read_csv('data/processed/x_train.csv')
+    x_test = pd.read_csv('data/processed/x_test.csv')
 
-    #file_name = 'test_data_2025_13.csv'
-    #df = pd.read_csv(f'{PROCESSED_DATA_FOLDER_PATH}{file_name}')
-    #transformed_df = transform_features(df)
-    #transformed_df.to_csv(f'{TRANSFORMED_DATA_FOLDER_PATH}{file_name}', index=False)
+    x_train_transformed, x_test_transformed = transform_features(x_train, x_test)
 
-    print(f'data stored in {TRANSFORMED_DATA_FOLDER_PATH}.')
-
-
+    x_train_transformed.to_csv('data/transformed/x_train.csv', index=False)
+    x_test_transformed.to_csv('data/transformed/x_test.csv', index=False)
 
 
 if __name__ == '__main__':
-    main()
+    #main()
+    transform_test()
+

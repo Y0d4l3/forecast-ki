@@ -9,10 +9,8 @@ from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import optuna
 
-MODEL_NAME = 'lightgbm'  # Options: xgboost, random_forest, lightgbm
+MODEL_NAME = 'random_forest'  # Options: xgboost, random_forest, lightgbm
 N_TRIALS = 100
-Y_COLUMN_NAME = 'production'
-FEATURES_TO_USE = []
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -20,13 +18,6 @@ handler = logging.FileHandler('model_training.log')
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-
-
-def get_features(df):
-    if len(FEATURES_TO_USE) != 0:
-        return FEATURES_TO_USE
-    else:
-        return [col for col in df.columns if col != Y_COLUMN_NAME]
 
 
 def objective(trial, x, y):
@@ -119,8 +110,7 @@ def main():
     else:
         raise ValueError('Model name unknown. Use xgboost, random_forest or lightgbm.')
 
-    model.fit(x_train, y_train)
-
+    model.fit(x_train, y_train.squeeze())
     evaluate_model(model, x_test, y_test)
     save_artifacts(model)
 

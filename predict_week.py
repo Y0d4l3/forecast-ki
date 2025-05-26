@@ -1,7 +1,7 @@
 import pickle
 import pandas as pd
 import numpy as np
-from train_model import Y_COLUMN_NAME
+from preprocess_data import Y_COLUMN_NAME
 
 MODEL = 'xgboost_2000'
 DATA_PATH = 'data/transformed/test_data_2025_13.csv'
