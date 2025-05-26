@@ -48,7 +48,7 @@ def transform_features(x_train, x_test):
     remaining_test_df = x_test.drop(columns=FEATURES_TO_TRANSFORM)
     x_test_transformed = pd.concat([transformed_test_df, remaining_test_df], axis=1)
 
-    with open('models/transformer.pkl', 'wb') as f:
+    with open(transformer_path, 'wb') as f:
         pickle.dump(preprocessor, f)
 
     return x_train_transformed, x_test_transformed
@@ -79,6 +79,6 @@ def main():
 
 
 if __name__ == '__main__':
-    #main()
-    transform_test()
+    main()
+    #transform_test()
 

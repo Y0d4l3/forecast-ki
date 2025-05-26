@@ -4,9 +4,9 @@ import numpy as np
 from preprocess_data import Y_COLUMN_NAME
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-MODEL = 'random_forest'
-X_TRAIN_PATH = 'data/transformed/x_train.csv'
-Y_TRAIN_PATH = 'data/processed/y_train.csv'
+MODEL = 'xgboost_sub_2000'
+X_TRAIN_PATH = 'data/transformed/sub_2000/x_train.csv'
+Y_TRAIN_PATH = 'data/processed/sub_2000/y_train.csv'
 
 
 def predict_per_week():

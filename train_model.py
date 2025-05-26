@@ -9,7 +9,7 @@ from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import optuna
 
-MODEL_NAME = 'random_forest'  # Options: xgboost, random_forest, lightgbm
+MODEL_NAME = 'xgboost'  # Options: xgboost, random_forest, lightgbm
 N_TRIALS = 100
 
 logger = logging.getLogger(__name__)
@@ -87,16 +87,16 @@ def evaluate_model(model, x_test, y_test):
 
 
 def save_artifacts(model):
-    with open(f'models/{MODEL_NAME}.pkl', 'wb') as f:
+    with open(f'models/{MODEL_NAME}_sub_2000.pkl', 'wb') as f:
         # noinspection PyTypeChecker
         pickle.dump(model, f)
 
 
 def main():
-    x_train = pd.read_csv('data/transformed/x_train.csv')
-    x_test = pd.read_csv('data/transformed/x_test.csv')
-    y_train = pd.read_csv('data/processed/y_train.csv')
-    y_test = pd.read_csv('data/processed/y_test.csv')
+    x_train = pd.read_csv('data/transformed/sub_2000/x_train.csv')
+    x_test = pd.read_csv('data/transformed/sub_2000/x_test.csv')
+    y_train = pd.read_csv('data/processed/sub_2000/y_train.csv')
+    y_test = pd.read_csv('data/processed/sub_2000/y_test.csv')
 
     logger.info('Training started with: ' + MODEL_NAME)
     best_params = optimize_model(x_train.to_numpy(), y_train.to_numpy(), n_trials=N_TRIALS)
